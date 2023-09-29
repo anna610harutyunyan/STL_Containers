@@ -1,21 +1,59 @@
-int main() {
-    HashTable hashTable(10);
 
-    // Insert some integers
-    hashTable.insert(5);
-    hashTable.insert(15);
-    hashTable.insert(25);
+#ifndef HASHTABLE_H
+#define HASHTABLE_H
 
-    // Search for integers
-    int searchKey1 = 15;
-    int searchKey2 = 10;
-    std::cout << "Search for " << searchKey1 << ": " << (hashTable.search(searchKey1) ? "Found" : "Not Found") << std::endl;
-    std::cout << "Search for " << searchKey2 << ": " << (hashTable.search(searchKey2) ? "Found" : "Not Found") << std::endl;
+#include <iostream>
+#include <vector>
 
-    // Remove an integer
-    int removeKey = 15;
-    hashTable.remove(removeKey);
-    std::cout << "Search for " << removeKey << " after removal: " << (hashTable.search(removeKey) ? "Found" : "Not Found") << std::endl;
+class HashTable {
+private:
+    std::vector<int> table;
+    int tableSize;
 
-    return 0;
-}
+public:
+    HashTable(int size) : tableSize(size), table(size, -1) {}
+
+    int hash(int key) const {
+        return key % tableSize;
+    }
+
+    void insert(int key) {
+        int index = hash(key);
+        while (table[index] != -1) {
+            index = (index + 1) % tableSize;
+        }
+        table[index] = key;
+    }
+
+
+    bool search(int key) const {
+        int index = hash(key);
+        int originalIndex = index;
+        while (table[index] != -1) {
+            if (table[index] == key) {
+                return true;
+            }
+            index = (index + 1) % tableSize;
+            if (index == originalIndex) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    void remove(int key) {
+        int index = hash(key);
+        int originalIndex = index;
+        while (table[index] != -1) {
+            if (table[index] == key) {
+                table[index] = -1;
+                return;
+            }
+            index = (index + 1) % tableSize;
+            if (index == originalIndex) {
+                return;
+            }
+        }
+    }
+};
+#endif // HASHTABLE_H
